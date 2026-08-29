@@ -1,0 +1,15 @@
+{
+  "name": "Controle Financeiro Pessoal",
+  "short_name": "Finanças",
+  "description": "Controle de gastos e entradas: saldo, extrato mensal, vencimentos e relatórios.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#09090f",
+  "theme_color": "#09090f",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

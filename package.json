@@ -1,0 +1,11 @@
+{
+  "name": "controle-pessoal",
+  "version": "1.0.0",
+  "description": "App para gastos e entradas: saldo, extrato mensal, vencimentos e relatórios.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"testes/**/*.test.mjs\""
+  },
+  "license": "MIT"
+}

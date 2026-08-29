@@ -5,11 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#09090f">
 <meta name="description" content="Controle pessoal de gastos e entradas: saldo, extrato mensal, vencimentos e relatorios.">
+<!-- CSP: 'unsafe-inline' e inevitavel enquanto CSS e JS moram no proprio arquivo.
+     Ainda assim fecha object-src, base-uri e form-action, e restringe de onde
+     script, estilo e fonte podem vir. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <title>Controle Financeiro</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- integrity: se o CDN devolver outro conteudo, o navegador recusa o script.
+     Sem isso, um CDN comprometido roda codigo na pagina que guarda todo o
+     historico financeiro. -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+        integrity="sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g"
+        crossorigin="anonymous"></script>
 <style>
 :root {
   --bg:#09090f;--surface:#111119;--card:#161621;--card2:#1d1d2e;
@@ -38,6 +49,15 @@ h1,h2,h3,.syne{font-family:'Syne',sans-serif}
 /* icones SVG: herdam a cor do texto */
 .ic{width:1.15em;height:1.15em;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;vertical-align:-.2em}
 
+/* aviso quando os dados salvos nao puderam ser lidos */
+.banner-aviso{display:none;align-items:flex-start;gap:.6rem;margin:.9rem 0;padding:.8rem .95rem;background:rgba(251,191,36,.1);border:1px solid var(--warning);border-radius:var(--r2);color:var(--warning);font-size:.9rem;line-height:1.45}
+.banner-aviso.show{display:flex}
+.banner-aviso .ic{flex-shrink:0;margin-top:.15rem}
+
+/* backup e restauracao */
+.backup-row{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:.6rem}
+.backup-nota{font-size:.875rem;color:var(--text2);line-height:1.5}
+
 /* pular para o conteudo */
 .skip-link{position:absolute;left:-9999px;z-index:3000;padding:.7rem 1rem;background:var(--gold);color:#000;border-radius:var(--r2);font-weight:700;font-size:.9rem}
 .skip-link:focus{left:1rem;top:1rem}
@@ -55,7 +75,7 @@ h1,h2,h3,.syne{font-family:'Syne',sans-serif}
 .logo-icon .ic{width:20px;height:20px;stroke-width:2.2}
 .logo h1{font-size:1.2rem;font-weight:700;letter-spacing:-.02em}
 .logo span{color:var(--gold)}
-.header-date{font-size:.8rem;color:var(--text2)}
+.header-date{font-size:.8rem;color:var(--text2);text-align:right}
 
 /* TABS */
 .tab-nav{display:flex;gap:.2rem;padding:.6rem 0;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
@@ -340,13 +360,15 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:p
 
 <main id="conteudo">
 
+<div class="banner-aviso" id="aviso-carga" role="alert"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg><span></span></div>
+
 <!-- ===== DASHBOARD ===== -->
 <div id="tab-dashboard" class="tab-content active" role="tabpanel" aria-labelledby="tabbtn-dashboard" tabindex="0">
   <div class="kpi-grid" id="kpi-grid">
     <div class="kpi-card gold">
-      <div class="kpi-label"><svg class="ic" aria-hidden="true"><use href="#i-wallet"/></svg> Saldo Total</div>
+      <div class="kpi-label"><svg class="ic" aria-hidden="true"><use href="#i-wallet"/></svg> Saldo atual</div>
       <div class="kpi-value gold" id="kpi-saldo">R$ 0,00</div>
-      <div class="kpi-sub">Total acumulado</div>
+      <div class="kpi-sub" id="kpi-saldo-sub">Entradas menos contas pagas</div>
     </div>
     <div class="kpi-card green">
       <div class="kpi-label"><svg class="ic" aria-hidden="true"><use href="#i-in"/></svg> Entradas</div>
@@ -457,10 +479,22 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:p
     </div>
 
     <div class="export-row">
-      <button class="btn btn-secondary btn-sm" id="btn-export"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> Exportar CSV</button>
+      <button class="btn btn-secondary btn-sm" id="btn-export"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> Exportar CSV do período</button>
     </div>
   </div>
 </div>
+
+  <div class="card">
+    <div class="card-title"><svg class="ic" aria-hidden="true"><use href="#i-wallet"/></svg> Cópia de segurança</div>
+    <p class="backup-nota">O CSV serve para abrir numa planilha, mas não volta para o
+    aplicativo. Para não perder o histórico ao limpar o navegador ou trocar de
+    aparelho, exporte um backup e guarde o arquivo.</p>
+    <div class="backup-row">
+      <button class="btn btn-secondary btn-sm" id="btn-backup"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> Exportar backup</button>
+      <button class="btn btn-secondary btn-sm" id="btn-restore"><svg class="ic" aria-hidden="true"><use href="#i-inbox"/></svg> Restaurar backup</button>
+      <input type="file" id="file-restore" accept="application/json,.json" hidden>
+    </div>
+  </div>
 
 </main>
 
@@ -573,25 +607,51 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:p
   </div>
 </div>
 
+<!-- ===== CONFIRMAR RESTAURAÇÃO ===== -->
+<div class="modal-overlay centered" id="restore-modal" role="alertdialog" aria-modal="true"
+     aria-labelledby="restore-title" aria-describedby="restore-resumo">
+  <div class="modal-panel compact">
+    <div class="modal-header">
+      <h2 class="modal-title" id="restore-title" style="display:flex;align-items:center;gap:.45rem"><svg class="ic" aria-hidden="true"><use href="#i-inbox"/></svg> Restaurar backup</h2>
+      <button class="modal-close" id="restore-close" aria-label="Fechar"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="confirm-text" id="restore-resumo"></p>
+    <div class="confirm-btns">
+      <button class="btn btn-secondary" id="restore-cancel">Cancelar</button>
+      <button class="btn btn-primary" id="restore-confirm" style="width:auto">Substituir</button>
+    </div>
+  </div>
+</div>
+
 <!-- NOTIFICATIONS -->
 <div class="notif-wrap" id="notifs" role="status" aria-live="polite" aria-atomic="false"></div>
 
 <script>
 /* ==================== CONSTANTS ==================== */
+/* t = em que tipo de lancamento a categoria faz sentido. Antes a grade
+   oferecia Moradia e Saude para uma Entrada, o que sujava os relatorios. */
 const CAT = {
-  salario:      {l:'Salário',     i:'banknote', c:'#10d9a0'},
-  freelance:    {l:'Freelance',   i:'laptop',   c:'#818cf8'},
-  investimentos:{l:'Investim.',   i:'trend-up', c:'#a78bfa'},
-  alimentacao:  {l:'Alimentação', i:'food',     c:'#f97316'},
-  transporte:   {l:'Transporte',  i:'car',      c:'#06b6d4'},
-  moradia:      {l:'Moradia',     i:'home',     c:'#94a3b8'},
-  saude:        {l:'Saúde',       i:'pill',     c:'#ec4899'},
-  educacao:     {l:'Educação',    i:'cap',      c:'#3b82f6'},
-  lazer:        {l:'Lazer',       i:'game',     c:'#fbbf24'},
-  contas:       {l:'Contas',      i:'zap',      c:'#a8b3c4'},
-  vestuario:    {l:'Vestuário',   i:'shirt',    c:'#f43f5e'},
-  outros:       {l:'Outros',      i:'package',  c:'#8b93a3'},
+  salario:      {l:'Salário',     i:'banknote', c:'#10d9a0', t:'entrada'},
+  freelance:    {l:'Freelance',   i:'laptop',   c:'#818cf8', t:'entrada'},
+  investimentos:{l:'Investim.',   i:'trend-up', c:'#a78bfa', t:'ambos'},
+  alimentacao:  {l:'Alimentação', i:'food',     c:'#f97316', t:'saida'},
+  transporte:   {l:'Transporte',  i:'car',      c:'#06b6d4', t:'saida'},
+  moradia:      {l:'Moradia',     i:'home',     c:'#94a3b8', t:'saida'},
+  saude:        {l:'Saúde',       i:'pill',     c:'#ec4899', t:'saida'},
+  educacao:     {l:'Educação',    i:'cap',      c:'#3b82f6', t:'saida'},
+  lazer:        {l:'Lazer',       i:'game',     c:'#fbbf24', t:'saida'},
+  contas:       {l:'Contas',      i:'zap',      c:'#a8b3c4', t:'saida'},
+  vestuario:    {l:'Vestuário',   i:'shirt',    c:'#f43f5e', t:'saida'},
+  outros:       {l:'Outros',      i:'package',  c:'#8b93a3', t:'ambos'},
 };
+
+function categoriasDe(tipo){
+  return Object.entries(CAT).filter(([, v]) => !tipo || v.t === 'ambos' || v.t === tipo);
+}
+/* COR-02: le a cor do token CSS em vez de repeti-la escrita a mao no JS. */
+function token(nome){
+  return getComputedStyle(document.documentElement).getPropertyValue(nome).trim();
+}
 
 /* Texto do usuario vai para innerHTML em varios pontos: escapar evita que uma
    descricao contendo "<" quebre a lista ou injete marcacao. */
@@ -624,12 +684,15 @@ let eType = 'entrada', eCat = 'outros', eStatus = 'pago';
 let fType = 'todos', fCat = null, fQ = '';
 let rFiltered = [];
 let charts = {};
+let avisoDeCarga = null;   // chave onde o conteudo ilegivel foi guardado, se houve
 
 /* ==================== INIT ==================== */
 document.addEventListener('DOMContentLoaded', () => {
-  Chart.defaults.color = '#9a9ab8';
-  Chart.defaults.borderColor = '#252535';
-  Chart.defaults.font.size = 12;
+  if(typeof Chart !== 'undefined'){
+    Chart.defaults.color = token('--text2');
+    Chart.defaults.borderColor = token('--border');
+    Chart.defaults.font.size = 12;
+  }
   loadTx();
   setDefaultDates();
   buildCatChips();
@@ -637,13 +700,60 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   switchTab('dashboard');
   renderAll();
+  mostrarAvisoDeCarga();
 });
 
-function loadTx(){
-  const s = localStorage.getItem('finapp_v3');
-  tx = s ? JSON.parse(s) : [];
+function mostrarAvisoDeCarga(){
+  if(!avisoDeCarga) return;
+  const el = document.getElementById('aviso-carga');
+  el.querySelector('span').textContent = avisoDeCarga === 'sem_copia'
+    ? 'Os lancamentos salvos estavam ilegiveis e nao foi possivel guardar uma copia. O app abriu vazio.'
+    : 'Os lancamentos salvos estavam ilegiveis. Nada foi apagado: uma copia foi guardada em ' +
+      avisoDeCarga + '. O app abriu vazio.';
+  el.classList.add('show');
 }
-function saveTx(){ localStorage.setItem('finapp_v3', JSON.stringify(tx)); }
+
+/* DADOS-01: um JSON ilegivel derrubava toda a inicializacao e deixava a tela
+   em branco. Agora o conteudo estranho e preservado sob outra chave (e o
+   historico do usuario, nao se joga fora) e o app abre vazio, avisando. */
+function loadTx(){
+  const bruto = localStorage.getItem('finapp_v3');
+  if(!bruto){ tx = []; return; }
+  try{
+    const dados = JSON.parse(bruto);
+    if(!Array.isArray(dados)) throw new Error('conteudo nao e uma lista');
+    tx = dados;
+  }catch(e){
+    tx = [];
+    const chave = 'finapp_v3_ilegivel_' + Date.now();
+    try{ localStorage.setItem(chave, bruto); avisoDeCarga = chave; }
+    catch(_){ avisoDeCarga = 'sem_copia'; }
+  }
+}
+
+/* DADOS-03: setItem pode lancar (cota cheia, armazenamento bloqueado). Antes a
+   excecao subia e o usuario via "Transacao adicionada!" sem nada ter sido
+   salvo. Agora quem chama decide o que fazer com o false. */
+function saveTx(){
+  try{
+    localStorage.setItem('finapp_v3', JSON.stringify(tx));
+    return true;
+  }catch(e){
+    const cheio = e && (e.name === 'QuotaExceededError' || e.code === 22);
+    toast(cheio ? 'Armazenamento cheio: nada foi salvo.'
+                : 'Nao foi possivel salvar neste navegador.', 'error');
+    return false;
+  }
+}
+
+/* COR-01: Date.now() repete dentro do mesmo milissegundo, e dois lancamentos
+   com o mesmo id faziam editar e apagar agirem no registro errado. */
+function novoId(){
+  if(typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+}
+/* Ids antigos sao numeros e os novos sao texto: comparar sempre como texto. */
+function mesmoId(a, b){ return String(a) === String(b); }
 
 function setDefaultDates(){
   const today = new Date().toISOString().split('T')[0];
@@ -671,6 +781,12 @@ function switchTab(tab, moveFocus){
   document.getElementById(`tab-${tab}`).classList.add('active');
   if(tab === 'dashboard') renderDashboard();
   if(tab === 'extrato') renderExtrato();
+  /* COR-04: sem isto, um relatorio gerado antes continuava valendo para a
+     exportacao mesmo com outra tela na frente. */
+  if(tab !== 'relatorios'){
+    rFiltered = [];
+    document.getElementById('report-content').style.display = 'none';
+  }
 }
 
 /* Setas navegam entre abas, como manda o padrao WAI-ARIA de tablist. */
@@ -704,8 +820,12 @@ function renderKPIs(){
   });
   const ent = mTx.filter(t=>t.type==='entrada').reduce((s,t)=>s+t.amount,0);
   const sai = mTx.filter(t=>t.type==='saida').reduce((s,t)=>s+t.amount,0);
+  /* UX-01: o saldo abatia contas ainda nao pagas, e o numero nao era nem o
+     disponivel hoje nem o resultado do periodo. Agora mostra o realizado e diz
+     no subtitulo quanto ainda ha a pagar. */
   const saldo = tx.filter(t=>t.type==='entrada').reduce((s,t)=>s+t.amount,0)
-              - tx.filter(t=>t.type==='saida').reduce((s,t)=>s+t.amount,0);
+              - tx.filter(t=>t.type==='saida'&&t.status!=='pendente').reduce((s,t)=>s+t.amount,0);
+  const aPagar = tx.filter(t=>t.type==='saida'&&t.status==='pendente').reduce((s,t)=>s+t.amount,0);
   const poupanca = ent > 0 ? Math.max(0,(ent-sai)/ent*100) : null;
   const ml = MONTHS_S[now.getMonth()]+' '+now.getFullYear();
 
@@ -714,11 +834,14 @@ function renderKPIs(){
   document.getElementById('kpi-entradas').textContent = fmtR(ent);
   document.getElementById('kpi-saidas').textContent = fmtR(sai);
   document.getElementById('kpi-poupanca').textContent = poupanca !== null ? poupanca.toFixed(1)+'%' : '—';
+  document.getElementById('kpi-saldo-sub').textContent =
+    aPagar > 0 ? `Sem contar ${fmtR(aPagar)} a pagar` : 'Entradas menos contas pagas';
   document.getElementById('kpi-ent-sub').textContent = ml;
   document.getElementById('kpi-sai-sub').textContent = ml;
 }
 
 function renderChartMensal(){
+  if(typeof Chart === 'undefined') return;
   const now = new Date();
   const labels=[], ents=[], sais=[];
   for(let i=5;i>=0;i--){
@@ -746,14 +869,15 @@ function renderChartMensal(){
       plugins:{legend:{labels:{font:{size:10}}},
         tooltip:{callbacks:{label:c=>` ${fmtR(c.raw)}`}}},
       scales:{
-        x:{ticks:{font:{size:9}},grid:{color:'#252535'}},
-        y:{ticks:{font:{size:9},callback:v=>v>=1000?'R$'+(v/1000).toFixed(0)+'k':'R$'+v},grid:{color:'#252535'}}
+        x:{ticks:{font:{size:9}},grid:{color:token('--border')}},
+        y:{ticks:{font:{size:9},callback:v=>v>=1000?'R$'+(v/1000).toFixed(0)+'k':'R$'+v},grid:{color:token('--border')}}
       }
     }
   });
 }
 
 function renderChartCat(){
+  if(typeof Chart === 'undefined') return;
   const now = new Date();
   const mTx = tx.filter(t=>{
     const d = new Date(t.date+'T12:00:00');
@@ -770,7 +894,7 @@ function renderChartCat(){
     type:'doughnut',
     data:{
       labels:keys.map(k=>CAT[k]?.l||k),
-      datasets:[{data:keys.map(k=>cMap[k]),backgroundColor:keys.map(k=>CAT[k]?.c||'#6b7280'),borderColor:'#161621',borderWidth:2,hoverOffset:6}]
+      datasets:[{data:keys.map(k=>cMap[k]),backgroundColor:keys.map(k=>CAT[k]?.c||'#6b7280'),borderColor:token('--card'),borderWidth:2,hoverOffset:6}]
     },
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{
@@ -923,8 +1047,8 @@ function renderExtrato(){
   });
   el.innerHTML=html;
 
-  el.querySelectorAll('.tx-act-btn.edit').forEach(b=>b.addEventListener('click',()=>openEdit(parseInt(b.dataset.id))));
-  el.querySelectorAll('.tx-act-btn.del').forEach(b=>b.addEventListener('click',()=>openDel(parseInt(b.dataset.id))));
+  el.querySelectorAll('.tx-act-btn.edit').forEach(b=>b.addEventListener('click',()=>openEdit(b.dataset.id)));
+  el.querySelectorAll('.tx-act-btn.del').forEach(b=>b.addEventListener('click',()=>openDel(b.dataset.id)));
 }
 
 function buildCatChips(){
@@ -966,6 +1090,7 @@ function renderRelatorio(){
 }
 
 function renderLinha(start,end){
+  if(typeof Chart === 'undefined') return;
   const sorted=[...rFiltered].sort((a,b)=>new Date(a.date)-new Date(b.date));
   const dateMap={};
   sorted.forEach(t=>{ dateMap[t.date]=(dateMap[t.date]||0)+(t.type==='entrada'?t.amount:-t.amount); });
@@ -982,14 +1107,15 @@ function renderLinha(start,end){
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fmtR(c.raw)}`}}},
       scales:{
-        x:{ticks:{font:{size:11},maxTicksLimit:8},grid:{color:'#252535'}},
-        y:{ticks:{font:{size:11},callback:v=>v>=1000?'R$'+(v/1000).toFixed(0)+'k':'R$'+v},grid:{color:'#252535'}}
+        x:{ticks:{font:{size:11},maxTicksLimit:8},grid:{color:token('--border')}},
+        y:{ticks:{font:{size:11},callback:v=>v>=1000?'R$'+(v/1000).toFixed(0)+'k':'R$'+v},grid:{color:token('--border')}}
       }
     }
   });
 }
 
 function renderPizza(filtered){
+  if(typeof Chart === 'undefined') return;
   const cMap={};
   filtered.filter(t=>t.type==='saida').forEach(t=>{ const c=t.category||'outros'; cMap[c]=(cMap[c]||0)+t.amount; });
   if(charts.pizza) charts.pizza.destroy();
@@ -999,7 +1125,7 @@ function renderPizza(filtered){
   charts.pizza=new Chart(ctx,{
     type:'doughnut',
     data:{labels:keys.map(k=>CAT[k]?.l||k),
-      datasets:[{data:keys.map(k=>cMap[k]),backgroundColor:keys.map(k=>CAT[k]?.c||'#6b7280'),borderColor:'#161621',borderWidth:2,hoverOffset:6}]},
+      datasets:[{data:keys.map(k=>cMap[k]),backgroundColor:keys.map(k=>CAT[k]?.c||'#6b7280'),borderColor:token('--card'),borderWidth:2,hoverOffset:6}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:10,padding:8}},
         tooltip:{callbacks:{label:c=>` ${fmtR(c.raw)}`}}}}
@@ -1027,14 +1153,18 @@ function renderBreakdown(filtered){
 }
 
 /* ==================== CAT GRID ==================== */
-function buildCatGrid(gridId, selected, onSel){
+function buildCatGrid(gridId, selected, onSel, tipo){
   const el=document.getElementById(gridId);
+  const lista=categoriasDe(tipo);
+  // se a categoria escolhida nao vale para este tipo, cai na primeira valida
+  if(!lista.some(([k])=>k===selected)){ selected=lista[0][0]; onSel(selected); }
   // <button> em vez de <div>: recebe foco e responde a Enter/Espaco sem gambiarra.
-  el.innerHTML=Object.entries(CAT).map(([k,v])=>`
+  el.innerHTML=lista.map(([k,v])=>`
     <button type="button" class="cat-opt ${k===selected?'sel':''}" data-cat="${k}"
             role="radio" aria-checked="${k===selected?'true':'false'}" tabindex="${k===selected?'0':'-1'}">
       <span class="ce">${icon(v.i)}</span><span class="cn">${v.l}</span>
     </button>`).join('');
+  const colunas=4;
   const opts=[...el.querySelectorAll('.cat-opt')];
   const select=opt=>{
     opts.forEach(x=>{x.classList.remove('sel');x.setAttribute('aria-checked','false');x.tabIndex=-1;});
@@ -1044,7 +1174,7 @@ function buildCatGrid(gridId, selected, onSel){
   opts.forEach((opt,idx)=>{
     opt.addEventListener('click',()=>select(opt));
     opt.addEventListener('keydown',e=>{
-      const map={ArrowRight:1,ArrowDown:4,ArrowLeft:-1,ArrowUp:-4};
+      const map={ArrowRight:1,ArrowDown:colunas,ArrowLeft:-1,ArrowUp:-colunas};
       if(!(e.key in map)) return;
       e.preventDefault();
       const next=opts[(idx+map[e.key]+opts.length)%opts.length];
@@ -1128,7 +1258,6 @@ function openAdd(){
   document.getElementById('a-due').value='';
   document.getElementById('a-date').value=new Date().toISOString().split('T')[0];
   updateAddUI();
-  buildCatGrid('cg-add',aCat,c=>{aCat=c;});
   limparErros('a');
   abrirModal('add-modal');
   setTimeout(()=>document.getElementById('a-desc').focus(),300);
@@ -1147,7 +1276,7 @@ function updateAddUI(){
   document.getElementById('a-pago').className='status-btn'+(aStatus==='pago'?' act-pago':'');
   document.getElementById('a-pend').className='status-btn'+(aStatus==='pendente'?' act-pendente':'');
   aCat = aType==='entrada'?'salario':'outros';
-  buildCatGrid('cg-add',aCat,c=>{aCat=c;});
+  buildCatGrid('cg-add',aCat,c=>{aCat=c;},aType);
 }
 
 function submitAdd(){
@@ -1157,14 +1286,16 @@ function submitAdd(){
   const due=document.getElementById('a-due').value;
   const notes=document.getElementById('a-notes').value.trim();
 
-  tx.push({id:Date.now(),type:aType,category:aCat,description:desc,amount:val,date,dueDate:aType==='saida'?due:null,status:aType==='saida'?aStatus:'pago',notes});
-  saveTx(); closeAdd(); renderAll();
+  tx.push({id:novoId(),type:aType,category:aCat,description:desc,amount:val,date,dueDate:aType==='saida'?due:null,status:aType==='saida'?aStatus:'pago',notes});
+  // so confirma ao usuario se a gravacao realmente aconteceu
+  if(!saveTx()){ tx.pop(); return; }
+  closeAdd(); renderAll();
   toast('Transação adicionada!','success');
 }
 
 /* ==================== EDIT MODAL ==================== */
 function openEdit(id){
-  const t=tx.find(t=>t.id===id);
+  const t=tx.find(t=>mesmoId(t.id,id));
   if(!t) return;
   eType=t.type; eCat=t.category||'outros'; eStatus=t.status||'pago';
   document.getElementById('e-id').value=id;
@@ -1174,7 +1305,7 @@ function openEdit(id){
   document.getElementById('e-due').value=t.dueDate||'';
   document.getElementById('e-notes').value=t.notes||'';
   updateEditUI();
-  buildCatGrid('cg-edit',eCat,c=>{eCat=c;});
+  buildCatGrid('cg-edit',eCat,c=>{eCat=c;},eType);
   limparErros('e');
   abrirModal('edit-modal');
   setTimeout(()=>document.getElementById('e-desc').focus(),300);
@@ -1195,16 +1326,18 @@ function updateEditUI(){
 }
 
 function submitEdit(){
-  const id=parseInt(document.getElementById('e-id').value);
+  const id=document.getElementById('e-id').value;
   const dados=validar('e');
   if(!dados) return;
   const {desc,val,date}=dados;
   const due=document.getElementById('e-due').value;
   const notes=document.getElementById('e-notes').value.trim();
-  const idx=tx.findIndex(t=>t.id===id);
+  const idx=tx.findIndex(t=>mesmoId(t.id,id));
   if(idx===-1) return;
+  const anterior=tx[idx];
   tx[idx]={...tx[idx],type:eType,category:eCat,description:desc,amount:val,date,dueDate:eType==='saida'?due:null,status:eType==='saida'?eStatus:'pago',notes};
-  saveTx(); closeEdit(); renderAll();
+  if(!saveTx()){ tx[idx]=anterior; return; }
+  closeEdit(); renderAll();
   toast('Transação atualizada!','success');
 }
 
@@ -1217,9 +1350,107 @@ function openDel(id){
 function closeDel(){ delId=null; fecharModal('del-modal'); }
 function confirmDel(){
   if(delId===null) return;
-  tx=tx.filter(t=>t.id!==delId);
-  saveTx(); closeDel(); renderAll();
+  const anterior=tx;
+  tx=tx.filter(t=>!mesmoId(t.id,delId));
+  if(!saveTx()){ tx=anterior; return; }
+  closeDel(); renderAll();
   toast('Transação removida','info');
+}
+
+/* ==================== BACKUP E RESTAURACAO ==================== */
+/* DADOS-02: o CSV serve para ler numa planilha, nao para voltar. Sem uma
+   exportacao que reimporte, limpar o navegador apagava o historico inteiro
+   sem recurso. */
+const BACKUP_VERSAO = 1;
+
+function baixarArquivo(conteudo, nome, tipo){
+  const blob = new Blob([conteudo], { type: tipo });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function exportarBackup(){
+  const pacote = {
+    formato: 'controle-pessoal-backup',
+    versao: BACKUP_VERSAO,
+    exportadoEm: new Date().toISOString(),
+    transacoes: tx
+  };
+  baixarArquivo(JSON.stringify(pacote, null, 2),
+    `backup-financas-${new Date().toISOString().split('T')[0]}.json`,
+    'application/json');
+  toast(`Backup com ${tx.length} lancamento(s) baixado.`, 'success');
+}
+
+/* Valida antes de aceitar: um arquivo trocado nao pode virar perda de dados. */
+function lerPacoteDeBackup(texto){
+  const dados = JSON.parse(texto);
+  const lista = Array.isArray(dados) ? dados : dados && dados.transacoes;
+  if(!Array.isArray(lista)) throw new Error('O arquivo nao contem uma lista de lancamentos.');
+  return lista.map(t => {
+    if(!t || typeof t !== 'object') throw new Error('Ha um lancamento invalido no arquivo.');
+    const valor = Number(t.amount);
+    if(!isFinite(valor)) throw new Error('Ha um lancamento com valor invalido.');
+    if(!t.date || !/^\d{4}-\d{2}-\d{2}$/.test(t.date)) throw new Error('Ha um lancamento com data invalida.');
+    return {
+      id: t.id != null ? t.id : novoId(),
+      type: t.type === 'entrada' ? 'entrada' : 'saida',
+      category: CAT[t.category] ? t.category : 'outros',
+      description: String(t.description == null ? '' : t.description),
+      amount: valor,
+      date: t.date,
+      dueDate: t.dueDate || null,
+      status: t.status === 'pendente' ? 'pendente' : 'pago',
+      notes: String(t.notes == null ? '' : t.notes)
+    };
+  });
+}
+
+let pendenteDeRestauro = null;
+
+function escolherBackup(arquivo){
+  if(!arquivo) return;
+  const leitor = new FileReader();
+  leitor.onload = () => {
+    try{
+      pendenteDeRestauro = lerPacoteDeBackup(String(leitor.result));
+    }catch(e){
+      toast('Backup invalido: ' + e.message, 'error');
+      pendenteDeRestauro = null;
+      return;
+    }
+    document.getElementById('restore-resumo').textContent =
+      `O arquivo tem ${pendenteDeRestauro.length} lancamento(s). ` +
+      `Os ${tx.length} lancamento(s) atuais serao substituidos.`;
+    abrirModal('restore-modal');
+    setTimeout(()=>document.getElementById('restore-cancel').focus(),120);
+  };
+  leitor.onerror = () => toast('Nao foi possivel ler o arquivo.', 'error');
+  leitor.readAsText(arquivo);
+}
+
+function confirmarRestauro(){
+  if(!pendenteDeRestauro) return;
+  const anterior = tx;
+  tx = pendenteDeRestauro;
+  if(!saveTx()){ tx = anterior; return; }
+  pendenteDeRestauro = null;
+  fecharModal('restore-modal');
+  renderAll();
+  toast(`Backup restaurado: ${tx.length} lancamento(s).`, 'success');
+}
+
+/* SEG-01: um campo iniciado por = + - @ e avaliado como formula ao abrir a
+   planilha; o apostrofo neutraliza.
+   SEG-02: RFC 4180 - aspas dentro do campo tem de ser duplicadas, senao a
+   linha inteira sai com as colunas deslocadas. */
+function campoCSV(v){
+  let s = String(v == null ? '' : v);
+  if(/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return '"' + s.replace(/"/g, '""') + '"';
 }
 
 /* ==================== EXPORT ==================== */
@@ -1234,7 +1465,7 @@ function exportCSV(){
     t.status==='pendente'?'Pendente':'Pago',
     t.notes||''
   ]);
-  const csv=[hdr,...rows].map(r=>r.map(v=>`"${v}"`).join(';')).join('\n');
+  const csv=[hdr,...rows].map(r=>r.map(campoCSV).join(';')).join('\r\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
@@ -1263,8 +1494,8 @@ function setupListeners(){
   // Edit modal
   document.getElementById('edit-close').addEventListener('click',closeEdit);
   document.getElementById('edit-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEdit();});
-  document.getElementById('e-ent').addEventListener('click',()=>{eType='entrada';updateEditUI();buildCatGrid('cg-edit',eCat,c=>{eCat=c;});});
-  document.getElementById('e-sai').addEventListener('click',()=>{eType='saida';updateEditUI();buildCatGrid('cg-edit',eCat,c=>{eCat=c;});});
+  document.getElementById('e-ent').addEventListener('click',()=>{eType='entrada';updateEditUI();buildCatGrid('cg-edit',eCat,c=>{eCat=c;},eType);});
+  document.getElementById('e-sai').addEventListener('click',()=>{eType='saida';updateEditUI();buildCatGrid('cg-edit',eCat,c=>{eCat=c;},eType);});
   document.getElementById('e-pago').addEventListener('click',()=>{eStatus='pago';document.getElementById('e-pago').className='status-btn act-pago';document.getElementById('e-pend').className='status-btn';document.getElementById('e-pago').setAttribute('aria-pressed','true');document.getElementById('e-pend').setAttribute('aria-pressed','false');});
   document.getElementById('e-pend').addEventListener('click',()=>{eStatus='pendente';document.getElementById('e-pago').className='status-btn';document.getElementById('e-pend').className='status-btn act-pendente';document.getElementById('e-pago').setAttribute('aria-pressed','false');document.getElementById('e-pend').setAttribute('aria-pressed','true');});
   document.getElementById('e-submit').addEventListener('click',submitEdit);
@@ -1289,6 +1520,17 @@ function setupListeners(){
   // Relatório
   document.getElementById('btn-gerar').addEventListener('click',renderRelatorio);
   document.getElementById('btn-export').addEventListener('click',exportCSV);
+  // backup
+  document.getElementById('btn-backup').addEventListener('click',exportarBackup);
+  document.getElementById('btn-restore').addEventListener('click',()=>document.getElementById('file-restore').click());
+  document.getElementById('file-restore').addEventListener('change',e=>{
+    escolherBackup(e.target.files[0]);
+    e.target.value='';        // permite escolher o mesmo arquivo de novo
+  });
+  document.getElementById('restore-close').addEventListener('click',()=>fecharModal('restore-modal'));
+  document.getElementById('restore-cancel').addEventListener('click',()=>fecharModal('restore-modal'));
+  document.getElementById('restore-confirm').addEventListener('click',confirmarRestauro);
+  document.getElementById('restore-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)fecharModal('restore-modal');});
   // Keyboard
   document.addEventListener('keydown',e=>{
     if(e.key==='Escape'){
@@ -1296,6 +1538,7 @@ function setupListeners(){
       if(!m) return;
       if(m.id==='add-modal') closeAdd();
       else if(m.id==='edit-modal') closeEdit();
+      else if(m.id==='restore-modal') fecharModal('restore-modal');
       else closeDel();
     }
   });
@@ -1316,6 +1559,14 @@ function fmtDateFull(s){
   const d=new Date(s+'T12:00:00');
   return d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
 }
+/* PROC-04: registra o service worker. So funciona em http(s); aberto por
+   file:// nao registra, e isso nao e erro. */
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{ /* sem offline, o resto funciona */ });
+  });
+}
+
 function toast(msg,type='info'){
   const el=document.getElementById('notifs');
   const t=document.createElement('div');
