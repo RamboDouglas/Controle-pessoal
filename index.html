@@ -14,7 +14,10 @@
 <link rel="icon" href="icone.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<!-- display=optional e nao swap: com swap o texto e redesenhado quando a fonte
+     chega, e o CLS medido foi 0,086; com optional, 0. O custo e a primeira
+     visita em rede lenta poder usar a fonte do sistema. -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=optional" rel="stylesheet">
 <!-- integrity: se o CDN devolver outro conteudo, o navegador recusa o script.
      Sem isso, um CDN comprometido roda codigo na pagina que guarda todo o
      historico financeiro. -->
