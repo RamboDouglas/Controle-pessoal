@@ -57,6 +57,81 @@ h1,h2,h3,.syne{font-family:'Syne',sans-serif}
 .banner-aviso.show{display:flex}
 .banner-aviso .ic{flex-shrink:0;margin-top:.15rem}
 
+/* somar valores redondos sem digitar */
+.val-rapido{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
+.val-rapido button{
+  padding:.4rem .7rem;min-height:36px;border:1px solid var(--border2);background:var(--surface);
+  color:var(--text2);border-radius:99px;font-family:'DM Sans',sans-serif;font-size:.82rem;
+  font-weight:600;cursor:pointer;transition:all var(--tr)
+}
+@media (hover:hover){.val-rapido button:hover{border-color:var(--gold);color:var(--gold)}}
+.val-rapido button:active{transform:scale(.94)}
+.val-rapido .limpar{margin-left:auto;color:var(--text3)}
+
+/* o que quase nunca muda fica recolhido */
+.mais-opcoes{margin-bottom:.9rem;border-top:1px solid var(--border);padding-top:.7rem}
+.mais-opcoes summary{
+  display:flex;align-items:center;gap:.45rem;min-height:var(--tap);cursor:pointer;
+  font-size:.875rem;font-weight:600;color:var(--text2);list-style:none;user-select:none
+}
+.mais-opcoes summary::-webkit-details-marker{display:none}
+.mais-opcoes summary .ic{transition:transform var(--tr)}
+.mais-opcoes[open] summary .ic{transform:rotate(180deg)}
+@media (hover:hover){.mais-opcoes summary:hover{color:var(--text)}}
+.mais-conteudo{padding-top:.6rem}
+
+/* salvar / salvar e novo */
+.acoes-form{display:grid;grid-template-columns:1fr auto;gap:.6rem}
+.acoes-form .btn{width:100%}
+
+/* folha de acoes: menu que sobe de baixo */
+.menu-lista{display:flex;flex-direction:column;gap:.3rem}
+.menu-item{
+  display:flex;align-items:center;gap:.75rem;width:100%;min-height:var(--tap);
+  padding:.75rem .85rem;border:none;background:none;color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:500;
+  border-radius:var(--r2);cursor:pointer;text-align:left;transition:background var(--tr)
+}
+.menu-item .ic{color:var(--text2);flex-shrink:0}
+@media (hover:hover){.menu-item:hover{background:var(--card2)}}
+.menu-item:active{background:var(--card2);transform:scale(.99)}
+.menu-item .sub{display:block;font-size:.8rem;color:var(--text3);font-weight:400;margin-top:.1rem}
+.menu-item.perigo{color:var(--danger)}
+.menu-item.perigo .ic{color:var(--danger)}
+.menu-sep{height:1px;background:var(--border);margin:.35rem 0}
+.menu-titulo{
+  font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--text3);padding:.5rem .85rem .3rem
+}
+
+/* selo de status vira botao: um toque quita a conta */
+button.tx-badge{border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all var(--tr)}
+button.tx-badge:active{transform:scale(.93)}
+@media (hover:hover){button.tx-badge:hover{filter:brightness(1.35)}}
+
+/* pagar direto do card de vencimentos */
+.due-item .due-acao{
+  display:flex;align-items:center;gap:.35rem;margin-top:.4rem;padding:.35rem .6rem;
+  min-height:34px;border:1px solid var(--success);background:transparent;color:var(--success);
+  border-radius:99px;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer
+}
+.due-item .due-acao:active{transform:scale(.95)}
+.due-right{display:flex;flex-direction:column;align-items:flex-end;gap:.1rem}
+
+/* lancamentos automaticos */
+.rec-lista{display:flex;flex-direction:column;gap:.5rem;margin-top:.7rem}
+.rec-item{
+  display:flex;align-items:center;justify-content:space-between;gap:.7rem;
+  padding:.6rem .8rem;background:var(--card2);border:1px solid var(--border);border-radius:var(--r2)
+}
+.rec-info{font-size:.9rem;min-width:0}
+.rec-info .quando{display:block;font-size:.78rem;color:var(--text3);margin-top:.1rem}
+.rec-remover{
+  width:36px;height:36px;flex-shrink:0;border:none;background:var(--surface);border-radius:8px;
+  color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center
+}
+@media (hover:hover){.rec-remover:hover{color:var(--danger)}}
+
 /* backup e restauracao */
 .backup-row{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:.6rem}
 .backup-nota{font-size:.875rem;color:var(--text2);line-height:1.5}
@@ -289,6 +364,14 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:p
 .toast.success{background:var(--card2);border:1px solid var(--success);color:var(--success)}
 .toast.error{background:var(--card2);border:1px solid var(--danger);color:var(--danger)}
 .toast.info{background:var(--card2);border:1px solid var(--gold);color:var(--gold)}
+/* botao dentro do aviso (Desfazer) */
+.toast-acao{
+  margin-left:auto;padding:.3rem .7rem;min-height:32px;border:1px solid currentColor;
+  background:transparent;color:inherit;border-radius:99px;font-family:'DM Sans',sans-serif;
+  font-size:.8rem;font-weight:700;cursor:pointer;flex-shrink:0
+}
+.toast-acao:active{transform:scale(.94)}
+
 @keyframes toastIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
 @keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateX(16px)}}
 
@@ -323,6 +406,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:p
 <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
 <symbol id="i-left" viewBox="0 0 24 24"><path d="m14.5 5.5-6.5 6.5 6.5 6.5"/></symbol>
 <symbol id="i-right" viewBox="0 0 24 24"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.4 5.9.85-4.25 4.15 1 5.9-5.25-2.8-5.25 2.8 1-5.9L3.5 9.75l5.9-.85Z"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2"/><path d="M15.5 5.5v-1a2 2 0 0 0-2-2h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h1"/></symbol>
+<symbol id="i-repeat" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 0 1 14.5-6"/><path d="M18.5 2.5v4h-4"/><path d="M20.5 12A8.5 8.5 0 0 1 6 18"/><path d="M5.5 21.5v-4h4"/></symbol>
+<symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="4.5" y="4.5" width="15" height="17" rx="2"/><path d="M9 4.5V3.6a1.6 1.6 0 0 1 1.6-1.6h2.8A1.6 1.6 0 0 1 15 3.6v.9Z"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9.5 6 6 6-6"/></symbol>
 <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.3 12.3 2.5 2.5 4.9-5.1"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.6 4.6 4.6L19 7.2"/></symbol>
 <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M5.6 4.5h12.8l2.6 7.3V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5.2Z"/><path d="M3 11.8h5.2l1.4 2.9h4.8l1.4-2.9H21"/></symbol>
@@ -488,6 +576,14 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:p
 </div>
 
   <div class="card">
+    <div class="card-title"><svg class="ic" aria-hidden="true"><use href="#i-repeat"/></svg> Lançamentos automáticos</div>
+    <p class="backup-nota">Contas que se repetem todo mês. São criadas como pendentes
+    no dia certo, e você só confirma o pagamento. Para criar uma, use
+    <strong>Repetir todo mês</strong> no toque longo de um lançamento.</p>
+    <div class="rec-lista" id="rec-lista"></div>
+  </div>
+
+  <div class="card">
     <div class="card-title"><svg class="ic" aria-hidden="true"><use href="#i-wallet"/></svg> Cópia de segurança</div>
     <p class="backup-nota">O CSV serve para abrir numa planilha, mas não volta para o
     aplicativo. Para não perder o histórico ao limpar o navegador ou trocar de
@@ -514,39 +610,55 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:p
       <button class="modal-close" id="add-close" aria-label="Fechar"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
     <div class="type-toggle" role="group" aria-label="Tipo de lançamento">
-      <button class="type-btn act-entrada" id="a-ent" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-in"/></svg> Entrada</button>
-      <button class="type-btn" id="a-sai" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-out"/></svg> Saída</button>
+      <button class="type-btn" id="a-ent" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-in"/></svg> Entrada</button>
+      <button class="type-btn act-saida" id="a-sai" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-out"/></svg> Saída</button>
+    </div>
+    <div class="fg">
+      <label class="form-label" for="a-val">Valor (R$)</label>
+      <input type="text" id="a-val" class="form-control" inputmode="decimal" placeholder="0,00" aria-describedby="a-val-hint a-val-err">
+      <div class="val-rapido" role="group" aria-label="Somar ao valor">
+        <button type="button" data-somar="10">+10</button>
+        <button type="button" data-somar="50">+50</button>
+        <button type="button" data-somar="100">+100</button>
+        <button type="button" id="a-colar" title="Usar o valor copiado"><svg class="ic" aria-hidden="true"><use href="#i-clipboard"/></svg> colar</button>
+        <button type="button" class="limpar" data-somar="0">limpar</button>
+      </div>
+      <p class="form-hint" id="a-val-hint">Vírgula para centavos. Aceita conta: 12+8</p>
+      <div class="field-error" id="a-val-err"><svg class="ic" aria-hidden="true"><use href="#i-alert-circle"/></svg><span></span></div>
     </div>
     <div class="fg">
       <span class="form-label" id="cg-add-label">Categoria</span>
       <div class="cat-grid" id="cg-add" role="radiogroup" aria-labelledby="cg-add-label"></div>
     </div>
     <div class="fg">
-      <label class="form-label" for="a-desc">Descrição</label>
-      <input type="text" id="a-desc" class="form-control" placeholder="Ex: Salário, Aluguel, Mercado..." aria-describedby="a-desc-err">
+      <label class="form-label" for="a-desc">Descrição <span style="color:var(--text3);font-weight:400">(opcional)</span></label>
+      <input type="text" id="a-desc" class="form-control" list="descricoes-usadas" placeholder="Sem texto, vale o nome da categoria" aria-describedby="a-desc-err">
+      <datalist id="descricoes-usadas"></datalist>
       <div class="field-error" id="a-desc-err"><svg class="ic" aria-hidden="true"><use href="#i-alert-circle"/></svg><span></span></div>
     </div>
-    <div class="fg">
-      <label class="form-label" for="a-val">Valor (R$)</label>
-      <input type="text" id="a-val" class="form-control" inputmode="decimal" placeholder="0,00" aria-describedby="a-val-hint a-val-err">
-      <p class="form-hint" id="a-val-hint">Use vírgula para os centavos. Ex.: 1250,90</p>
-      <div class="field-error" id="a-val-err"><svg class="ic" aria-hidden="true"><use href="#i-alert-circle"/></svg><span></span></div>
-    </div>
-    <div class="fg">
-      <label class="form-label" for="a-date">Data</label>
-      <input type="date" id="a-date" class="form-control" aria-describedby="a-date-err">
-      <div class="field-error" id="a-date-err"><svg class="ic" aria-hidden="true"><use href="#i-alert-circle"/></svg><span></span></div>
-    </div>
-    <div class="fg" id="a-due-g" style="display:none"><label class="form-label" for="a-due">Vencimento</label><input type="date" id="a-due" class="form-control"></div>
-    <div id="a-status-g" style="display:none">
-      <span class="form-label" id="a-status-label">Status</span>
-      <div class="status-toggle" role="group" aria-labelledby="a-status-label">
-        <button class="status-btn act-pago" id="a-pago" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg> Pago</button>
-        <button class="status-btn" id="a-pend" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg> Pendente</button>
+    <details class="mais-opcoes" id="a-mais">
+      <summary><svg class="ic" aria-hidden="true"><use href="#i-down"/></svg> Mais opções</summary>
+      <div class="mais-conteudo">
+        <div class="fg">
+          <label class="form-label" for="a-date">Data</label>
+          <input type="date" id="a-date" class="form-control" aria-describedby="a-date-err">
+          <div class="field-error" id="a-date-err"><svg class="ic" aria-hidden="true"><use href="#i-alert-circle"/></svg><span></span></div>
+        </div>
+        <div class="fg" id="a-due-g" style="display:none"><label class="form-label" for="a-due">Vencimento</label><input type="date" id="a-due" class="form-control"></div>
+        <div id="a-status-g" style="display:none">
+          <span class="form-label" id="a-status-label">Status</span>
+          <div class="status-toggle" role="group" aria-labelledby="a-status-label">
+            <button class="status-btn act-pago" id="a-pago" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg> Pago</button>
+            <button class="status-btn" id="a-pend" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg> Pendente</button>
+          </div>
+        </div>
+        <div class="fg"><label class="form-label" for="a-notes">Notas</label><input type="text" id="a-notes" class="form-control" placeholder="Observações..."></div>
       </div>
+    </details>
+    <div class="acoes-form">
+      <button class="btn btn-primary" id="a-submit">Salvar</button>
+      <button class="btn btn-secondary" id="a-submit-novo">Salvar e novo</button>
     </div>
-    <div class="fg"><label class="form-label" for="a-notes">Notas <span style="color:var(--text3);font-weight:400">(opcional)</span></label><input type="text" id="a-notes" class="form-control" placeholder="Observações..."></div>
-    <button class="btn btn-primary" id="a-submit">Adicionar Transação</button>
   </div>
 </div>
 
@@ -610,6 +722,28 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:p
   </div>
 </div>
 
+<!-- ===== MENU RÁPIDO (toque longo no botão de novo) ===== -->
+<div class="modal-overlay" id="menu-modal" role="dialog" aria-modal="true" aria-labelledby="menu-title">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2 class="modal-title" id="menu-title">Lançar</h2>
+      <button class="modal-close" id="menu-close" aria-label="Fechar"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="menu-lista" id="menu-conteudo"></div>
+  </div>
+</div>
+
+<!-- ===== AÇÕES DE UM LANÇAMENTO ===== -->
+<div class="modal-overlay" id="acoes-modal" role="dialog" aria-modal="true" aria-labelledby="acoes-title">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2 class="modal-title" id="acoes-title">Ações</h2>
+      <button class="modal-close" id="acoes-close" aria-label="Fechar"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="menu-lista" id="acoes-conteudo"></div>
+  </div>
+</div>
+
 <!-- ===== CONFIRMAR RESTAURAÇÃO ===== -->
 <div class="modal-overlay centered" id="restore-modal" role="alertdialog" aria-modal="true"
      aria-labelledby="restore-title" aria-describedby="restore-resumo">
@@ -648,8 +782,14 @@ const CAT = {
   outros:       {l:'Outros',      i:'package',  c:'#8b93a3', t:'ambos'},
 };
 
-function categoriasDe(tipo){
-  return Object.entries(CAT).filter(([, v]) => !tipo || v.t === 'ambos' || v.t === tipo);
+function categoriasDe(tipo, porUso){
+  const lista = Object.entries(CAT).filter(([, v]) => !tipo || v.t === 'ambos' || v.t === tipo);
+  if(!porUso) return lista;
+  // as mais usadas sobem; empate mantem a ordem original
+  return lista
+    .map((par, i) => ({ par, i, uso: prefs.usoCat[par[0]] || 0 }))
+    .sort((a, b) => b.uso - a.uso || a.i - b.i)
+    .map(x => x.par);
 }
 /* COR-02: le a cor do token CSS em vez de repeti-la escrita a mao no JS. */
 function token(nome){
@@ -667,10 +807,40 @@ function esc(v){
 function icon(name, cls){
   return `<svg class="ic${cls ? ' ' + cls : ''}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
 }
-/* Aceita "1250,90", "1.250,90" e "1250.90" - em pt-BR o separador decimal e a virgula. */
+/* Avalia + - * / sem eval, que a CSP bloqueia. Multiplicacao e divisao primeiro. */
+function avaliarConta(expr){
+  const tokens = expr.match(/\d+(?:\.\d+)?|[+\-*\/]/g);
+  if(!tokens || tokens.length % 2 === 0) return NaN;
+  const nums = [Number(tokens[0])];
+  const ops = [];
+  if(!isFinite(nums[0])) return NaN;
+  for(let i = 1; i < tokens.length; i += 2){
+    const op = tokens[i], n = Number(tokens[i + 1]);
+    if(!'+-*/'.includes(op) || !isFinite(n)) return NaN;
+    if(op === '*' || op === '/'){
+      const a = nums.pop();
+      if(op === '/' && n === 0) return NaN;
+      nums.push(op === '*' ? a * n : a / n);
+    }else{
+      ops.push(op); nums.push(n);
+    }
+  }
+  let r = nums[0];
+  for(let i = 0; i < ops.length; i++) r = ops[i] === '+' ? r + nums[i + 1] : r - nums[i + 1];
+  return r;
+}
+
+/* Aceita "1250,90", "1.250,90", "1250.90" e contas como "12+8" ou "3*4,50".
+   Em pt-BR o separador decimal e a virgula. */
 function parseVal(raw){
   const t = String(raw == null ? '' : raw).trim().replace(/R\$|\s/g, '');
   if(!t) return NaN;
+  // operador depois do primeiro caractere indica conta, e nao numero negativo
+  if(/[+*\/]/.test(t) || /.[-]/.test(t)){
+    const expr = t.replace(/\./g, '').replace(/,/g, '.');
+    if(!/^[0-9+\-*\/.]+$/.test(expr)) return NaN;
+    return avaliarConta(expr);
+  }
   return t.includes(',') ? parseFloat(t.replace(/\./g, '').replace(',', '.')) : parseFloat(t);
 }
 function valToField(n){ return String(n).replace('.', ','); }
@@ -689,6 +859,57 @@ let rFiltered = [];
 let charts = {};
 let avisoDeCarga = null;   // chave onde o conteudo ilegivel foi guardado, se houve
 
+/* Preferencias de uso: quais categorias voce mais usa e qual foi a ultima de
+   cada tipo. Serve para a grade abrir no lugar certo em vez de sempre em
+   'Outros'. Fica separado dos lancamentos: perder isto nao perde dado. */
+const PREFS_KEY = 'finapp_prefs_v1';
+let prefs = { usoCat:{}, ultimaCat:{ entrada:'salario', saida:'outros' } };
+
+function loadPrefs(){
+  try{
+    const s = localStorage.getItem(PREFS_KEY);
+    if(!s) return;
+    const p = JSON.parse(s);
+    if(p && typeof p === 'object'){
+      prefs.usoCat = p.usoCat && typeof p.usoCat === 'object' ? p.usoCat : {};
+      prefs.ultimaCat = Object.assign(prefs.ultimaCat, p.ultimaCat || {});
+    }
+  }catch(e){ /* preferencia corrompida nao pode impedir o app de abrir */ }
+}
+function savePrefs(){
+  try{ localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }catch(e){}
+}
+function registrarUso(tipo, cat){
+  prefs.usoCat[cat] = (prefs.usoCat[cat] || 0) + 1;
+  prefs.ultimaCat[tipo] = cat;
+  savePrefs();
+}
+/* Atalhos (favoritos) e lancamentos automaticos (recorrentes) moram em chaves
+   proprias: sao configuracao, nao historico. */
+const FAV_KEY = 'finapp_favoritos_v1';
+const REC_KEY = 'finapp_recorrentes_v1';
+const RASCUNHO_KEY = 'finapp_rascunho_v1';
+let favoritos = [];
+let recorrentes = [];
+
+function lerLista(chave){
+  try{
+    const s = localStorage.getItem(chave);
+    if(!s) return [];
+    const v = JSON.parse(s);
+    return Array.isArray(v) ? v : [];
+  }catch(e){ return []; }
+}
+function gravarLista(chave, lista){
+  try{ localStorage.setItem(chave, JSON.stringify(lista)); return true; }
+  catch(e){ toast('Não foi possível salvar.','error'); return false; }
+}
+
+/* vibracao curta: confirma o lancamento sem exigir olhar a tela */
+function confirmarNoTato(){
+  try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
+}
+
 /* ==================== INIT ==================== */
 document.addEventListener('DOMContentLoaded', () => {
   if(typeof Chart !== 'undefined'){
@@ -697,12 +918,17 @@ document.addEventListener('DOMContentLoaded', () => {
     Chart.defaults.font.size = 12;
   }
   loadTx();
+  loadPrefs();
+  favoritos = lerLista(FAV_KEY);
+  recorrentes = lerLista(REC_KEY);
+  aplicarRecorrentes();
   setDefaultDates();
   buildCatChips();
   setupListeners();
   document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   switchTab('dashboard');
   renderAll();
+  renderRecorrentes();
   mostrarAvisoDeCarga();
 });
 
@@ -710,8 +936,8 @@ function mostrarAvisoDeCarga(){
   if(!avisoDeCarga) return;
   const el = document.getElementById('aviso-carga');
   el.querySelector('span').textContent = avisoDeCarga === 'sem_copia'
-    ? 'Os lancamentos salvos estavam ilegiveis e nao foi possivel guardar uma copia. O app abriu vazio.'
-    : 'Os lancamentos salvos estavam ilegiveis. Nada foi apagado: uma copia foi guardada em ' +
+    ? 'Os lançamentos salvos estavam ilegíveis e não foi possível guardar uma cópia. O app abriu vazio.'
+    : 'Os lançamentos salvos estavam ilegíveis. Nada foi apagado: uma cópia foi guardada em ' +
       avisoDeCarga + '. O app abriu vazio.';
   el.classList.add('show');
 }
@@ -744,7 +970,7 @@ function saveTx(){
   }catch(e){
     const cheio = e && (e.name === 'QuotaExceededError' || e.code === 22);
     toast(cheio ? 'Armazenamento cheio: nada foi salvo.'
-                : 'Nao foi possivel salvar neste navegador.', 'error');
+                : 'Não foi possível salvar neste navegador.', 'error');
     return false;
   }
 }
@@ -932,9 +1158,14 @@ function renderDueDates(){
     else{ lbl=`Vence em ${diff} dias`; }
     return `<div class="due-item ${cls}">
       <div><div class="due-desc">${icon(cat.i)} ${esc(t.description)}</div><div class="due-date-label">${lbl} • ${fmtDate(t.dueDate)}</div></div>
-      <div class="due-amount">${fmtR(t.amount)}</div>
+      <div class="due-right">
+        <div class="due-amount">${fmtR(t.amount)}</div>
+        <button type="button" class="due-acao" data-quitar="${t.id}">${icon('check')} Pagar</button>
+      </div>
     </div>`;
   }).join('');
+  el.querySelectorAll('[data-quitar]').forEach(b=>
+    b.addEventListener('click',()=>alternarStatus(b.dataset.quitar)));
 }
 
 function renderInsights(){
@@ -1028,8 +1259,10 @@ function renderExtrato(){
       const cat = CAT[t.category]||CAT.outros;
       const sign = t.type==='entrada'?'+':'−';
       const pend = t.status==='pendente';
+      // o selo virou botao: um toque alterna pago/pendente sem abrir o modal
       const badge = t.type==='saida'
-        ? `<span class="tx-badge ${t.status||'pago'}">${icon(pend?'clock':'check')}${pend?'Pendente':'Pago'}</span>`
+        ? `<button type="button" class="tx-badge ${t.status||'pago'}" data-alternar="${t.id}"
+             aria-label="${pend?'Marcar como pago':'Marcar como pendente'}">${icon(pend?'clock':'check')}${pend?'Pendente':'Pago'}</button>`
         : '';
       const d = esc(t.description);
       html += `<div class="tx-item">
@@ -1050,8 +1283,30 @@ function renderExtrato(){
   });
   el.innerHTML=html;
 
+  el.querySelectorAll('[data-alternar]').forEach(b=>b.addEventListener('click',()=>alternarStatus(b.dataset.alternar)));
+  // toque longo (ou clique direito) abre as acoes da linha
+  el.querySelectorAll('.tx-item').forEach(linha=>{
+    let timer=null;
+    const abrir=()=>{ const alvo=linha.querySelector('[data-id]'); if(alvo) abrirAcoes(alvo.dataset.id); };
+    linha.addEventListener('pointerdown',e=>{
+      if(e.target.closest('button')) return;
+      timer=setTimeout(()=>{ timer=null; confirmarNoTato(); abrir(); },500);
+    });
+    ['pointerup','pointerleave','pointercancel','pointermove'].forEach(ev=>
+      linha.addEventListener(ev,()=>{ if(timer){ clearTimeout(timer); timer=null; } }));
+    linha.addEventListener('contextmenu',e=>{ e.preventDefault(); abrir(); });
+    // deslizar para a esquerda tambem abre as acoes
+    let x0=null, y0=null;
+    linha.addEventListener('pointerdown',e=>{ x0=e.clientX; y0=e.clientY; });
+    linha.addEventListener('pointerup',e=>{
+      if(x0===null) return;
+      const dx=e.clientX-x0, dy=Math.abs(e.clientY-y0);
+      x0=null;
+      if(dx < -60 && dy < 40 && !e.target.closest('button')) abrir();
+    });
+  });
   el.querySelectorAll('.tx-act-btn.edit').forEach(b=>b.addEventListener('click',()=>openEdit(b.dataset.id)));
-  el.querySelectorAll('.tx-act-btn.del').forEach(b=>b.addEventListener('click',()=>openDel(b.dataset.id)));
+  el.querySelectorAll('.tx-act-btn.del').forEach(b=>b.addEventListener('click',()=>apagarComDesfazer(b.dataset.id)));
 }
 
 function buildCatChips(){
@@ -1158,7 +1413,7 @@ function renderBreakdown(filtered){
 /* ==================== CAT GRID ==================== */
 function buildCatGrid(gridId, selected, onSel, tipo){
   const el=document.getElementById(gridId);
-  const lista=categoriasDe(tipo);
+  const lista=categoriasDe(tipo, true);
   // se a categoria escolhida nao vale para este tipo, cai na primeira valida
   if(!lista.some(([k])=>k===selected)){ selected=lista[0][0]; onSel(selected); }
   // <button> em vez de <div>: recebe foco e responde a Enter/Espaco sem gambiarra.
@@ -1240,34 +1495,100 @@ function validar(p){
   const val = parseVal(document.getElementById(`${p}-val`).value);
   const date = document.getElementById(`${p}-date`).value;
   let ok = true;
-  ok = setErr(`${p}-desc`, `${p}-desc-err`, desc ? '' : 'Informe uma descrição.') && ok;
+  // descricao deixou de ser obrigatoria: sem texto, vale o nome da categoria
+  setErr(`${p}-desc`, `${p}-desc-err`, '');
   ok = setErr(`${p}-val`, `${p}-val-err`,
-        (!isNaN(val) && val > 0) ? '' : 'Informe um valor maior que zero. Ex.: 1250,90') && ok;
+        (!isNaN(val) && val > 0) ? '' : 'Informe um valor maior que zero. Ex.: 1250,90 ou 12+8') && ok;
   ok = setErr(`${p}-date`, `${p}-date-err`, date ? '' : 'Informe a data.') && ok;
   if(!ok){
     const primeiro = document.querySelector(`#${p === 'a' ? 'add' : 'edit'}-modal [aria-invalid="true"]`);
-    if(primeiro) primeiro.focus();
+    if(primeiro){
+      // se o campo com erro estiver recolhido, abrir antes de focar
+      const recolhido = primeiro.closest('details');
+      if(recolhido) recolhido.open = true;
+      primeiro.focus();
+    }
     return null;
   }
   return { desc, val: Math.round(val * 100) / 100, date };
 }
 
 /* ==================== ADD MODAL ==================== */
-function openAdd(){
-  aType='entrada'; aCat='salario'; aStatus='pago';
-  document.getElementById('a-desc').value='';
-  document.getElementById('a-val').value='';
-  document.getElementById('a-notes').value='';
-  document.getElementById('a-due').value='';
-  document.getElementById('a-date').value=new Date().toISOString().split('T')[0];
-  updateAddUI();
+/* base opcional preenche o formulario: usado por repetir, duplicar e favoritos. */
+function openAdd(base){
+  let b = base || {};
+  if(!base){
+    const rascunho = lerRascunho();
+    if(rascunho){
+      b = rascunho;
+      if(rascunho.amount) b.amount = parseVal(rascunho.amount);
+      setTimeout(()=>toast('Retomando o rascunho.','info'), 400);
+    }
+  }
+  // abre em Saida: num controle de gastos a saida e a regra, a entrada e a excecao
+  aType = b.type || 'saida';
+  aStatus = b.status || 'pago';
+  aCat = b.category || prefs.ultimaCat[aType] || (aType === 'entrada' ? 'salario' : 'outros');
+  document.getElementById('a-desc').value = b.description || '';
+  document.getElementById('a-val').value = b.amount != null ? valToField(b.amount) : '';
+  document.getElementById('a-notes').value = b.notes || '';
+  document.getElementById('a-due').value = b.dueDate || '';
+  document.getElementById('a-date').value = b.date || new Date().toISOString().split('T')[0];
+  document.getElementById('a-mais').open = false;
+  atualizarDescricoesUsadas();
+  updateAddUI(true);
   limparErros('a');
   abrirModal('add-modal');
-  setTimeout(()=>document.getElementById('a-desc').focus(),300);
+  // o valor e o que importa; a descricao virou opcional
+  setTimeout(()=>{
+    const campo = document.getElementById('a-val');
+    campo.focus(); campo.select();
+  }, 300);
 }
-function closeAdd(){ fecharModal('add-modal'); }
 
-function updateAddUI(){
+/* Sugere no datalist as descricoes ja usadas, das mais recentes para as antigas. */
+function atualizarDescricoesUsadas(){
+  const vistas = new Set();
+  const lista = [];
+  for(let i = tx.length - 1; i >= 0 && lista.length < 40; i--){
+    const d = (tx[i].description || '').trim();
+    if(d && !vistas.has(d.toLowerCase())){ vistas.add(d.toLowerCase()); lista.push(d); }
+  }
+  document.getElementById('descricoes-usadas').innerHTML =
+    lista.map(d => `<option value="${esc(d)}"></option>`).join('');
+}
+/* Fechar sem querer nao pode custar o que ja foi digitado. */
+function guardarRascunho(){
+  const val = document.getElementById('a-val').value.trim();
+  const desc = document.getElementById('a-desc').value.trim();
+  if(!val && !desc){ descartarRascunho(); return false; }
+  try{
+    localStorage.setItem(RASCUNHO_KEY, JSON.stringify({
+      type:aType, category:aCat, status:aStatus,
+      amount:val, description:desc,
+      date:document.getElementById('a-date').value,
+      dueDate:document.getElementById('a-due').value,
+      notes:document.getElementById('a-notes').value
+    }));
+    return true;
+  }catch(e){ return false; }
+}
+function descartarRascunho(){
+  try{ localStorage.removeItem(RASCUNHO_KEY); }catch(e){}
+}
+function lerRascunho(){
+  try{
+    const s = localStorage.getItem(RASCUNHO_KEY);
+    return s ? JSON.parse(s) : null;
+  }catch(e){ return null; }
+}
+
+function closeAdd(){
+  if(guardarRascunho()) toast('Rascunho guardado.','info');
+  fecharModal('add-modal');
+}
+
+function updateAddUI(manterCategoria){
   document.getElementById('a-ent').className='type-btn'+(aType==='entrada'?' act-entrada':'');
   document.getElementById('a-sai').className='type-btn'+(aType==='saida'?' act-saida':'');
   document.getElementById('a-ent').setAttribute('aria-pressed',aType==='entrada'?'true':'false');
@@ -1278,21 +1599,42 @@ function updateAddUI(){
   document.getElementById('a-status-g').style.display=aType==='saida'?'block':'none';
   document.getElementById('a-pago').className='status-btn'+(aStatus==='pago'?' act-pago':'');
   document.getElementById('a-pend').className='status-btn'+(aStatus==='pendente'?' act-pendente':'');
-  aCat = aType==='entrada'?'salario':'outros';
+  // ao trocar o tipo, cai na ultima categoria usada naquele tipo em vez de
+  // sempre voltar para 'Outros'; buildCatGrid corrige se ela nao valer aqui
+  if(!manterCategoria) aCat = prefs.ultimaCat[aType] || (aType === 'entrada' ? 'salario' : 'outros');
   buildCatGrid('cg-add',aCat,c=>{aCat=c;},aType);
 }
 
-function submitAdd(){
+function submitAdd(continuar){
   const dados=validar('a');
   if(!dados) return;
   const {desc,val,date}=dados;
   const due=document.getElementById('a-due').value;
   const notes=document.getElementById('a-notes').value.trim();
+  // sem descricao, o nome da categoria ja diz o suficiente
+  const descricao = desc || CAT[aCat].l;
 
-  tx.push({id:novoId(),type:aType,category:aCat,description:desc,amount:val,date,dueDate:aType==='saida'?due:null,status:aType==='saida'?aStatus:'pago',notes});
+  tx.push({id:novoId(),type:aType,category:aCat,description:descricao,amount:val,date,dueDate:aType==='saida'?due:null,status:aType==='saida'?aStatus:'pago',notes});
   // so confirma ao usuario se a gravacao realmente aconteceu
   if(!saveTx()){ tx.pop(); return; }
-  closeAdd(); renderAll();
+
+  registrarUso(aType, aCat);
+  confirmarNoTato();
+  renderAll();
+
+  if(continuar){
+    // mantem tipo, categoria e data: compras vem em lote
+    document.getElementById('a-val').value='';
+    document.getElementById('a-desc').value='';
+    document.getElementById('a-notes').value='';
+    limparErros('a');
+    atualizarDescricoesUsadas();
+    toast(`${descricao} salvo. Próximo.`,'success');
+    document.getElementById('a-val').focus();
+    return;
+  }
+  descartarRascunho();
+  fecharModal('add-modal');
   toast('Transação adicionada!','success');
 }
 
@@ -1345,6 +1687,24 @@ function submitEdit(){
 }
 
 /* ==================== DELETE ==================== */
+/* Apagar direto e oferecer a volta: mais barato que confirmar toda vez, e o
+   dado nao se perde enquanto o aviso estiver na tela. */
+function apagarComDesfazer(id){
+  const idx = tx.findIndex(t => mesmoId(t.id, id));
+  if(idx === -1) return;
+  const removido = tx[idx];
+  tx.splice(idx, 1);
+  if(!saveTx()){ tx.splice(idx, 0, removido); return; }
+  renderAll();
+  toast(`"${removido.description}" apagado.`, 'info', {
+    rotulo: 'Desfazer',
+    fn: () => {
+      tx.splice(Math.min(idx, tx.length), 0, removido);
+      if(saveTx()){ renderAll(); toast('Lançamento de volta.','success'); }
+    }
+  });
+}
+
 function openDel(id){
   delId=id;
   abrirModal('del-modal');
@@ -1358,6 +1718,228 @@ function confirmDel(){
   if(!saveTx()){ tx=anterior; return; }
   closeDel(); renderAll();
   toast('Transação removida','info');
+}
+
+/* ==================== ACOES RAPIDAS ==================== */
+
+/* Quitar uma conta sem abrir o modal de edicao. */
+function alternarStatus(id){
+  const idx = tx.findIndex(t => mesmoId(t.id, id));
+  if(idx === -1) return;
+  const anterior = tx[idx];
+  if(anterior.type !== 'saida') return;
+  const virandoPago = anterior.status === 'pendente';
+  tx[idx] = { ...anterior, status: virandoPago ? 'pago' : 'pendente' };
+  if(!saveTx()){ tx[idx] = anterior; return; }
+  confirmarNoTato();
+  renderAll();
+  toast(virandoPago ? 'Marcado como pago.' : 'Voltou para pendente.', 'success');
+}
+
+/* Abre o formulario ja preenchido a partir de um lancamento existente. */
+function duplicarLancamento(id, comDataDeHoje){
+  const t = tx.find(x => mesmoId(x.id, id));
+  if(!t) return;
+  fecharModal('acoes-modal');
+  openAdd({
+    type:t.type, category:t.category, description:t.description, amount:t.amount,
+    notes:t.notes, status:t.status,
+    date: comDataDeHoje ? new Date().toISOString().split('T')[0] : t.date
+  });
+}
+
+function repetirUltimo(){
+  if(!tx.length){ toast('Ainda não há lançamento para repetir.','info'); return; }
+  const ultimo = tx[tx.length - 1];
+  fecharModal('menu-modal');
+  duplicarLancamento(ultimo.id, true);
+}
+
+/* ---- atalhos ---- */
+function salvarComoAtalho(id){
+  const t = tx.find(x => mesmoId(x.id, id));
+  if(!t) return;
+  if(favoritos.some(f => f.description === t.description && f.amount === t.amount)){
+    toast('Esse atalho já existe.','info'); return;
+  }
+  favoritos.push({ id:novoId(), type:t.type, category:t.category,
+                   description:t.description, amount:t.amount });
+  if(!gravarLista(FAV_KEY, favoritos)){ favoritos.pop(); return; }
+  fecharModal('acoes-modal');
+  toast(`"${t.description}" virou atalho.`,'success');
+}
+function removerAtalho(id){
+  favoritos = favoritos.filter(f => !mesmoId(f.id, id));
+  gravarLista(FAV_KEY, favoritos);
+  abrirMenuRapido();
+}
+function lancarAtalho(id){
+  const f = favoritos.find(x => mesmoId(x.id, id));
+  if(!f) return;
+  const hoje = new Date().toISOString().split('T')[0];
+  tx.push({ id:novoId(), type:f.type, category:f.category, description:f.description,
+            amount:f.amount, date:hoje, dueDate:null, status:'pago', notes:'' });
+  if(!saveTx()){ tx.pop(); return; }
+  registrarUso(f.type, f.category);
+  confirmarNoTato();
+  fecharModal('menu-modal');
+  renderAll();
+  toast(`${f.description} \u2022 ${fmtR(f.amount)} lançado.`,'success');
+}
+
+/* ---- lancamentos automaticos ---- */
+function tornarRecorrente(id){
+  const t = tx.find(x => mesmoId(x.id, id));
+  if(!t) return;
+  const dia = Number(t.date.split('-')[2]);
+  if(recorrentes.some(r => r.description === t.description && r.dia === dia)){
+    toast('Já existe um automático igual.','info'); return;
+  }
+  recorrentes.push({ id:novoId(), type:t.type, category:t.category,
+                     description:t.description, amount:t.amount, dia,
+                     ultimoMes: t.date.slice(0,7) });
+  if(!gravarLista(REC_KEY, recorrentes)){ recorrentes.pop(); return; }
+  fecharModal('acoes-modal');
+  renderRecorrentes();
+  toast(`"${t.description}" passa a ser criado todo dia ${dia}.`,'success');
+}
+function removerRecorrente(id){
+  recorrentes = recorrentes.filter(r => !mesmoId(r.id, id));
+  gravarLista(REC_KEY, recorrentes);
+  renderRecorrentes();
+  toast('Automático removido.','info');
+}
+
+/* Cria o que ja venceu neste mes. Marca o mes para nao repetir. */
+function aplicarRecorrentes(){
+  if(!recorrentes.length) return;
+  const hoje = new Date();
+  const mes = hoje.toISOString().slice(0,7);
+  const diaHoje = hoje.getDate();
+  let criados = 0;
+  recorrentes.forEach(r => {
+    if(r.ultimoMes === mes) return;
+    if(diaHoje < r.dia) return;
+    const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0).getDate();
+    const dia = Math.min(r.dia, ultimoDia);   // dia 31 em mes de 30
+    const data = `${mes}-${String(dia).padStart(2,'0')}`;
+    tx.push({ id:novoId(), type:r.type, category:r.category, description:r.description,
+              amount:r.amount, date:data,
+              dueDate: r.type === 'saida' ? data : null,
+              status: r.type === 'saida' ? 'pendente' : 'pago', notes:'' });
+    r.ultimoMes = mes;
+    criados++;
+  });
+  if(criados){
+    if(saveTx()){
+      gravarLista(REC_KEY, recorrentes);
+      setTimeout(()=>toast(`${criados} lançamento(s) automático(s) criado(s).`,'info'), 900);
+    }else{
+      tx.length -= criados;
+    }
+  }
+}
+
+function renderRecorrentes(){
+  const el = document.getElementById('rec-lista');
+  if(!el) return;
+  if(!recorrentes.length){
+    el.innerHTML = `<div class="empty-state"><p>Nenhum lançamento automático ainda.</p></div>`;
+    return;
+  }
+  el.innerHTML = recorrentes.map(r => `
+    <div class="rec-item">
+      <div class="rec-info">
+        ${icon(CAT[r.category] ? CAT[r.category].i : 'package')} ${esc(r.description)}
+        <span class="quando">${fmtR(r.amount)} \u2022 todo dia ${r.dia}</span>
+      </div>
+      <button type="button" class="rec-remover" data-rec="${r.id}" aria-label="Remover ${esc(r.description)}">
+        ${icon('trash')}
+      </button>
+    </div>`).join('');
+  el.querySelectorAll('[data-rec]').forEach(b =>
+    b.addEventListener('click', () => removerRecorrente(b.dataset.rec)));
+}
+
+/* ---- menus ---- */
+function abrirMenuRapido(){
+  const ultimo = tx.length ? tx[tx.length - 1] : null;
+  let html = `
+    <button class="menu-item" data-acao="nova-saida">${icon('out')} Nova saída</button>
+    <button class="menu-item" data-acao="nova-entrada">${icon('in')} Nova entrada</button>`;
+  if(ultimo){
+    html += `<button class="menu-item" data-acao="repetir">${icon('repeat')}
+      <span>Repetir o último<span class="sub">${esc(ultimo.description)} \u2022 ${fmtR(ultimo.amount)}</span></span>
+    </button>`;
+  }
+  if(favoritos.length){
+    html += `<div class="menu-sep"></div><div class="menu-titulo">Atalhos</div>`;
+    html += favoritos.map(f => `
+      <button class="menu-item" data-atalho="${f.id}">${icon(CAT[f.category] ? CAT[f.category].i : 'star')}
+        <span>${esc(f.description)}<span class="sub">${fmtR(f.amount)}</span></span>
+      </button>`).join('');
+  }
+  document.getElementById('menu-conteudo').innerHTML = html;
+  const cx = document.getElementById('menu-conteudo');
+  cx.querySelectorAll('[data-acao]').forEach(b => b.addEventListener('click', () => {
+    const a = b.dataset.acao;
+    fecharModal('menu-modal');
+    if(a === 'repetir') repetirUltimo();
+    else openAdd({ type: a === 'nova-entrada' ? 'entrada' : 'saida' });
+  }));
+  cx.querySelectorAll('[data-atalho]').forEach(b =>
+    b.addEventListener('click', () => lancarAtalho(b.dataset.atalho)));
+  abrirModal('menu-modal');
+}
+
+function abrirAcoes(id){
+  const t = tx.find(x => mesmoId(x.id, id));
+  if(!t) return;
+  const pend = t.status === 'pendente';
+  let html = `
+    <button class="menu-item" data-a="duplicar">${icon('copy')}
+      <span>Duplicar<span class="sub">${esc(t.description)} \u2022 ${fmtR(t.amount)}</span></span></button>
+    <button class="menu-item" data-a="repetir-hoje">${icon('repeat')} Lançar igual hoje</button>
+    <button class="menu-item" data-a="atalho">${icon('star')} Salvar como atalho</button>
+    <button class="menu-item" data-a="recorrente">${icon('repeat')} Repetir todo mês</button>`;
+  if(t.type === 'saida'){
+    html += `<button class="menu-item" data-a="status">${icon(pend ? 'check' : 'clock')}
+      ${pend ? 'Marcar como pago' : 'Voltar para pendente'}</button>`;
+  }
+  html += `<div class="menu-sep"></div>
+    <button class="menu-item" data-a="editar">${icon('edit')} Editar</button>
+    <button class="menu-item perigo" data-a="apagar">${icon('trash')} Apagar</button>`;
+  document.getElementById('acoes-conteudo').innerHTML = html;
+  document.getElementById('acoes-conteudo').querySelectorAll('[data-a]').forEach(b =>
+    b.addEventListener('click', () => {
+      const a = b.dataset.a;
+      if(a === 'duplicar') return duplicarLancamento(id, false);
+      if(a === 'repetir-hoje') return duplicarLancamento(id, true);
+      if(a === 'atalho') return salvarComoAtalho(id);
+      if(a === 'recorrente') return tornarRecorrente(id);
+      fecharModal('acoes-modal');
+      if(a === 'status') alternarStatus(id);
+      if(a === 'editar') openEdit(id);
+      if(a === 'apagar') apagarComDesfazer(id);
+    }));
+  abrirModal('acoes-modal');
+}
+
+/* Colar valor: le a area de transferencia e aproveita o primeiro numero. */
+async function colarValor(){
+  try{
+    const texto = await navigator.clipboard.readText();
+    const achado = String(texto).match(/-?[\d.]+,?\d*/);
+    if(!achado){ toast('Não achei um valor no que foi copiado.','info'); return; }
+    const n = parseVal(achado[0]);
+    if(isNaN(n) || n <= 0){ toast('Não achei um valor no que foi copiado.','info'); return; }
+    const campo = document.getElementById('a-val');
+    campo.value = valToField(n);
+    setErr('a-val','a-val-err','');
+    campo.focus();
+  }catch(e){
+    toast('O navegador não liberou a área de transferência.','info');
+  }
 }
 
 /* ==================== BACKUP E RESTAURACAO ==================== */
@@ -1385,19 +1967,19 @@ function exportarBackup(){
   baixarArquivo(JSON.stringify(pacote, null, 2),
     `backup-financas-${new Date().toISOString().split('T')[0]}.json`,
     'application/json');
-  toast(`Backup com ${tx.length} lancamento(s) baixado.`, 'success');
+  toast(`Backup com ${tx.length} lançamento(s) baixado(s).`, 'success');
 }
 
 /* Valida antes de aceitar: um arquivo trocado nao pode virar perda de dados. */
 function lerPacoteDeBackup(texto){
   const dados = JSON.parse(texto);
   const lista = Array.isArray(dados) ? dados : dados && dados.transacoes;
-  if(!Array.isArray(lista)) throw new Error('O arquivo nao contem uma lista de lancamentos.');
+  if(!Array.isArray(lista)) throw new Error('O arquivo não contém uma lista de lançamentos.');
   return lista.map(t => {
-    if(!t || typeof t !== 'object') throw new Error('Ha um lancamento invalido no arquivo.');
+    if(!t || typeof t !== 'object') throw new Error('Há um lançamento inválido no arquivo.');
     const valor = Number(t.amount);
-    if(!isFinite(valor)) throw new Error('Ha um lancamento com valor invalido.');
-    if(!t.date || !/^\d{4}-\d{2}-\d{2}$/.test(t.date)) throw new Error('Ha um lancamento com data invalida.');
+    if(!isFinite(valor)) throw new Error('Há um lançamento com valor inválido.');
+    if(!t.date || !/^\d{4}-\d{2}-\d{2}$/.test(t.date)) throw new Error('Há um lançamento com data inválida.');
     return {
       id: t.id != null ? t.id : novoId(),
       type: t.type === 'entrada' ? 'entrada' : 'saida',
@@ -1421,17 +2003,17 @@ function escolherBackup(arquivo){
     try{
       pendenteDeRestauro = lerPacoteDeBackup(String(leitor.result));
     }catch(e){
-      toast('Backup invalido: ' + e.message, 'error');
+      toast('Backup inválido: ' + e.message, 'error');
       pendenteDeRestauro = null;
       return;
     }
     document.getElementById('restore-resumo').textContent =
-      `O arquivo tem ${pendenteDeRestauro.length} lancamento(s). ` +
-      `Os ${tx.length} lancamento(s) atuais serao substituidos.`;
+      `O arquivo tem ${pendenteDeRestauro.length} lançamento(s). ` +
+      `Os ${tx.length} lançamento(s) atuais serão substituídos.`;
     abrirModal('restore-modal');
     setTimeout(()=>document.getElementById('restore-cancel').focus(),120);
   };
-  leitor.onerror = () => toast('Nao foi possivel ler o arquivo.', 'error');
+  leitor.onerror = () => toast('Não foi possível ler o arquivo.', 'error');
   leitor.readAsText(arquivo);
 }
 
@@ -1443,7 +2025,7 @@ function confirmarRestauro(){
   pendenteDeRestauro = null;
   fecharModal('restore-modal');
   renderAll();
-  toast(`Backup restaurado: ${tx.length} lancamento(s).`, 'success');
+  toast(`Backup restaurado: ${tx.length} lançamento(s).`, 'success');
 }
 
 /* SEG-01: um campo iniciado por = + - @ e avaliado como formula ao abrir a
@@ -1485,15 +2067,56 @@ function setupListeners(){
     b.addEventListener('keydown',tabKeydown);
   });
   // FAB
-  document.getElementById('fab').addEventListener('click',openAdd);
+  // toque curto abre o formulario; toque longo abre o menu de atalhos
+  const fab = document.getElementById('fab');
+  let fabTimer = null, fabLongo = false;
+  fab.addEventListener('click', () => { if(!fabLongo) openAdd(); fabLongo = false; });
+  fab.addEventListener('pointerdown', () => {
+    fabLongo = false;
+    fabTimer = setTimeout(() => { fabLongo = true; confirmarNoTato(); abrirMenuRapido(); }, 450);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(ev =>
+    fab.addEventListener(ev, () => { if(fabTimer){ clearTimeout(fabTimer); fabTimer = null; } }));
+  fab.addEventListener('contextmenu', e => { e.preventDefault(); abrirMenuRapido(); });
+
+  document.getElementById('a-colar').addEventListener('click', colarValor);
+
+  // menus
+  document.getElementById('menu-close').addEventListener('click',()=>fecharModal('menu-modal'));
+  document.getElementById('menu-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)fecharModal('menu-modal');});
+  document.getElementById('acoes-close').addEventListener('click',()=>fecharModal('acoes-modal'));
+  document.getElementById('acoes-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)fecharModal('acoes-modal');});
   // Add modal
   document.getElementById('add-close').addEventListener('click',closeAdd);
   document.getElementById('add-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeAdd();});
   document.getElementById('a-ent').addEventListener('click',()=>{aType='entrada';updateAddUI();});
   document.getElementById('a-sai').addEventListener('click',()=>{aType='saida';updateAddUI();});
+  // trocar de categoria conta como escolha para a proxima vez
+  document.getElementById('cg-add').addEventListener('click',()=>{ prefs.ultimaCat[aType]=aCat; });
   document.getElementById('a-pago').addEventListener('click',()=>{aStatus='pago';document.getElementById('a-pago').className='status-btn act-pago';document.getElementById('a-pend').className='status-btn';document.getElementById('a-pago').setAttribute('aria-pressed','true');document.getElementById('a-pend').setAttribute('aria-pressed','false');});
   document.getElementById('a-pend').addEventListener('click',()=>{aStatus='pendente';document.getElementById('a-pago').className='status-btn';document.getElementById('a-pend').className='status-btn act-pendente';document.getElementById('a-pago').setAttribute('aria-pressed','false');document.getElementById('a-pend').setAttribute('aria-pressed','true');});
-  document.getElementById('a-submit').addEventListener('click',submitAdd);
+  document.getElementById('a-submit').addEventListener('click',()=>submitAdd(false));
+  document.getElementById('a-submit-novo').addEventListener('click',()=>submitAdd(true));
+  // Enter no valor ou na descricao salva, em vez de nao fazer nada
+  ['a-val','a-desc'].forEach(id=>{
+    document.getElementById(id).addEventListener('keydown',e=>{
+      if(e.key==='Enter'){ e.preventDefault(); submitAdd(false); }
+    });
+  });
+  // somar valores redondos sem digitar
+  document.querySelectorAll('.val-rapido [data-somar]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const campo=document.getElementById('a-val');
+      const somar=Number(b.dataset.somar);
+      if(!somar){ campo.value=''; }
+      else{
+        const atual=parseVal(campo.value);
+        campo.value=valToField(Math.round(((isNaN(atual)?0:atual)+somar)*100)/100);
+      }
+      setErr('a-val','a-val-err','');
+      campo.focus();
+    });
+  });
   // Edit modal
   document.getElementById('edit-close').addEventListener('click',closeEdit);
   document.getElementById('edit-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEdit();});
@@ -1542,6 +2165,8 @@ function setupListeners(){
       if(m.id==='add-modal') closeAdd();
       else if(m.id==='edit-modal') closeEdit();
       else if(m.id==='restore-modal') fecharModal('restore-modal');
+      else if(m.id==='menu-modal') fecharModal('menu-modal');
+      else if(m.id==='acoes-modal') fecharModal('acoes-modal');
       else closeDel();
     }
   });
@@ -1570,14 +2195,22 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   });
 }
 
-function toast(msg,type='info'){
+function toast(msg,type='info',acao){
   const el=document.getElementById('notifs');
   const t=document.createElement('div');
   const icons={success:'check-circle',error:'alert-circle',info:'bulb'};
   t.className=`toast ${type}`;
   t.innerHTML=`${icon(icons[type]||'bulb')}<span>${esc(msg)}</span>`;
+  if(acao){
+    // o aviso precisa aceitar clique: a barra inteira ignora ponteiro por padrao
+    t.style.pointerEvents='auto';
+    const b=document.createElement('button');
+    b.type='button'; b.className='toast-acao'; b.textContent=acao.rotulo;
+    b.addEventListener('click',()=>{ t.remove(); acao.fn(); });
+    t.appendChild(b);
+  }
   el.appendChild(t);
-  setTimeout(()=>t.remove(),4100);
+  setTimeout(()=>t.remove(),acao?6500:4100);
 }
 </script>
 </body>

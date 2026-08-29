@@ -173,3 +173,69 @@ test('o app não quebra se o Chart.js não carregar', () => {
   assert.doesNotThrow(() => app.renderChartMensal());
   assert.doesNotThrow(() => app.renderChartCat());
 });
+
+/* ============ melhorias de lançamento rápido ============ */
+
+test('01: o formulário abre em Saída, não em Entrada', () => {
+  const app = carregarApp();
+  const fonte = app.openAdd.toString();
+  assert.match(fonte, /b\.type \|\| 'saida'/, 'o padrão precisa ser saída');
+});
+
+test('09: o campo de valor aceita conta', () => {
+  const app = carregarApp();
+  assert.equal(app.parseVal('12+8'), 20);
+  assert.equal(app.parseVal('3*4,50'), 13.5);
+  assert.equal(app.parseVal('10+2*3'), 16, 'multiplicação vem antes da soma');
+  assert.equal(app.parseVal('20-5'), 15);
+  assert.ok(Number.isNaN(app.parseVal('10/0')), 'divisão por zero não vira valor');
+  assert.ok(Number.isNaN(app.parseVal('abc+1')));
+});
+
+test('09: número comum continua sendo lido como antes', () => {
+  const app = carregarApp();
+  assert.equal(app.parseVal('1.250,90'), 1250.9);
+  assert.equal(app.parseVal('R$ 80,00'), 80);
+});
+
+test('07: as categorias mais usadas vêm primeiro', () => {
+  const app = carregarApp();
+  app.ler("prefs.usoCat = { lazer: 9, alimentacao: 3 }");
+  const ordem = app.categoriasDe('saida', true).map(([k]) => k);
+  assert.equal(ordem[0], 'lazer');
+  assert.equal(ordem[1], 'alimentacao');
+});
+
+test('07: sem pedir ordenação, a ordem original é mantida', () => {
+  const app = carregarApp();
+  app.ler("prefs.usoCat = { lazer: 99 }");
+  const ordem = app.categoriasDe('saida').map(([k]) => k);
+  // investimentos vale para os dois tipos e vem antes na declaracao do CAT
+  assert.equal(ordem[0], 'investimentos', 'a ordem declarada não pode mudar');
+});
+
+test('preferência ilegível não impede o app de abrir', () => {
+  const app = carregarApp({ storage: { finapp_prefs_v1: '{quebrado' } });
+  assert.doesNotThrow(() => app.loadPrefs());
+  assert.deepEqual(app.ler('prefs.ultimaCat.saida'), 'outros');
+});
+
+test('14/17: lista guardada com conteúdo inválido devolve lista vazia', () => {
+  const app = carregarApp({ storage: { finapp_favoritos_v1: 'nao e json' } });
+  assert.deepEqual(app.lerLista('finapp_favoritos_v1').length, 0);
+  assert.deepEqual(app.lerLista('finapp_recorrentes_v1').length, 0);
+});
+
+test('03: sem descrição, o lançamento recebe o nome da categoria', () => {
+  const app = carregarApp();
+  const fonte = app.submitAdd.toString();
+  assert.match(fonte, /desc \|\| CAT\[aCat\]\.l/, 'a descrição vazia precisa cair na categoria');
+});
+
+test('21: apagar guarda o lançamento para poder desfazer', () => {
+  const app = carregarApp();
+  const fonte = app.apagarComDesfazer.toString();
+  // procurar so por /Desfazer/ seria cego: o nome da funcao ja contem a palavra
+  assert.match(fonte, /rotulo: 'Desfazer'/, 'o aviso precisa oferecer o botao');
+  assert.match(fonte, /splice/, 'precisa reinserir na posição original');
+});
