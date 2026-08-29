@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Sem dependencias: os testes usam o runner nativo do Node e um sandbox
+      # que carrega o proprio index.html.
+      - name: Rodar os testes
+        run: node --test "testes/**/*.test.mjs"
+
+      - name: Conferir se o HTML tem as tags essenciais
+        run: |
+          set -e
+          grep -q 'integrity="sha384-' index.html || { echo 'Chart.js sem integrity'; exit 1; }
+          grep -q 'Content-Security-Policy' index.html || { echo 'sem CSP'; exit 1; }
+          grep -q '<link rel="manifest"' index.html || { echo 'sem manifest'; exit 1; }
+          echo 'tags essenciais presentes'
